@@ -1,0 +1,690 @@
+<Window x:Class="网易云音乐下载.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:网易云音乐下载"
+        xmlns:models="clr-namespace:网易云音乐下载.Models"
+        xmlns:vm="clr-namespace:网易云音乐下载.ViewModels"
+        mc:Ignorable="d"
+        Title="网易云音乐工具" 
+        Height="700" 
+        Width="900"
+        MinHeight="600"
+        MinWidth="700"
+        Background="#FFF5F5F5"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <!-- 颜色资源 -->
+        <SolidColorBrush x:Key="PrimaryColor" Color="#FFEC4141"/>
+        <SolidColorBrush x:Key="PrimaryLightColor" Color="#FFFF6B6B"/>
+        <SolidColorBrush x:Key="PrimaryDarkColor" Color="#FFC62828"/>
+        <SolidColorBrush x:Key="BackgroundColor" Color="#FFF5F5F5"/>
+        <SolidColorBrush x:Key="CardBackgroundColor" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="TextPrimaryColor" Color="#FF333333"/>
+        <SolidColorBrush x:Key="TextSecondaryColor" Color="#FF666666"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#FFE0E0E0"/>
+        <SolidColorBrush x:Key="SuccessColor" Color="#FF4CAF50"/>
+        <SolidColorBrush x:Key="WarningColor" Color="#FFFF9800"/>
+        <SolidColorBrush x:Key="ErrorColor" Color="#FFF44336"/>
+
+        <!-- 按钮样式 -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryLightColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryDarkColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#FFCCCCCC"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFF5F5F5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFEEEEEE"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFEEEEEE"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 文本框样式 -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryColor}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 单选按钮样式 -->
+        <Style x:Key="ModernRadioButtonStyle" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,20,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="radioBorder"
+                                    Width="18"
+                                    Height="18"
+                                    CornerRadius="9"
+                                    BorderBrush="{StaticResource BorderColor}"
+                                    BorderThickness="2"
+                                    Background="White">
+                                <Ellipse x:Name="radioCheck"
+                                         Width="8"
+                                         Height="8"
+                                         Fill="{StaticResource PrimaryColor}"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Visibility="Collapsed"/>
+                            </Border>
+                            <ContentPresenter Margin="8,0,0,0" 
+                                              VerticalAlignment="Center"
+                                              Content="{TemplateBinding Content}"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="radioBorder" Property="BorderBrush" Value="{StaticResource PrimaryColor}"/>
+                                <Setter TargetName="radioCheck" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 卡片样式 -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackgroundColor}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="1" 
+                                      BlurRadius="8" 
+                                      Opacity="0.1" 
+                                      Color="Black"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 进度条样式 -->
+        <Style x:Key="ModernProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Background" Value="#FFE0E0E0"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4">
+                            <Grid>
+                                <Rectangle x:Name="PART_Track" Fill="Transparent"/>
+                                <Rectangle x:Name="PART_Indicator" 
+                                           Fill="{TemplateBinding Foreground}"
+                                           RadiusX="4" RadiusY="4"
+                                           HorizontalAlignment="Left"
+                                           Width="0"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 布尔转可见性转换器 -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <!-- 布尔值反转转换器 -->
+        <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
+
+        <!-- 输入模式转换器 -->
+        <local:InputModeConverter x:Key="InputModeConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 标题栏 -->
+        <Border Grid.Row="0" 
+                Background="{StaticResource PrimaryColor}" 
+                Padding="20,16">
+            <TextBlock Text="网易云音乐工具" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="White"/>
+        </Border>
+
+        <!-- 主内容区 -->
+        <TabControl Grid.Row="1" 
+                    SelectedIndex="{Binding SelectedTabIndex}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="20">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="border" 
+                                        Background="Transparent"
+                                        Padding="16,12"
+                                        Margin="0,0,8,0"
+                                        CornerRadius="8,8,0,0">
+                                    <ContentPresenter Content="{TemplateBinding Header}"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="White"/>
+                                        <Setter Property="Foreground" Value="{StaticResource PrimaryColor}"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter Property="Foreground" Value="{StaticResource TextSecondaryColor}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#22FFFFFF"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+
+            <!-- NCM 转换 Tab -->
+            <TabItem Header="NCM 转换">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,10,0,0">
+                        <!-- 输入模式选择卡片 -->
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="输入模式" 
+                                           FontSize="16" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,12"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Content="单文件" 
+                                                 Style="{StaticResource ModernRadioButtonStyle}"
+                                                 IsChecked="{Binding InputMode, Converter={StaticResource InputModeConverter}, ConverterParameter=SingleFile}"/>
+                                    <RadioButton Content="批量文件夹" 
+                                                 Style="{StaticResource ModernRadioButtonStyle}"
+                                                 IsChecked="{Binding InputMode, Converter={StaticResource InputModeConverter}, ConverterParameter=BatchFolder}"/>
+                                    <RadioButton Content="多文件选择" 
+                                                 Style="{StaticResource ModernRadioButtonStyle}"
+                                                 IsChecked="{Binding InputMode, Converter={StaticResource InputModeConverter}, ConverterParameter=MultipleFiles}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 输入路径卡片 -->
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="输入路径" 
+                                           FontSize="16" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,12"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0"
+                                             Style="{StaticResource ModernTextBoxStyle}"
+                                             Text="{Binding InputPath, UpdateSourceTrigger=PropertyChanged}"
+                                             IsReadOnly="True"
+                                             Margin="0,0,12,0"/>
+                                    <Button Grid.Column="1"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            Content="浏览..."
+                                            Command="{Binding BrowseInputCommand}"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 输出设置卡片 -->
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="输出设置" 
+                                           FontSize="16" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,12"/>
+                                
+                                <Grid Margin="0,0,0,16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0"
+                                             Style="{StaticResource ModernTextBoxStyle}"
+                                             Text="{Binding OutputPath, UpdateSourceTrigger=PropertyChanged}"
+                                             IsReadOnly="True"
+                                             Margin="0,0,12,0"/>
+                                    <Button Grid.Column="1"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            Content="浏览..."
+                                            Command="{Binding BrowseOutputCommand}"/>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="输出格式:" 
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,12,0"/>
+                                    <ComboBox Width="120"
+                                              SelectedItem="{Binding OutputFormat}"
+                                              Padding="8,6"
+                                              BorderBrush="{StaticResource BorderColor}">
+                                        <ComboBoxItem Content="MP3" IsSelected="True"/>
+                                        <ComboBoxItem Content="FLAC"/>
+                                        <ComboBoxItem Content="WAV"/>
+                                    </ComboBox>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 文件列表卡片 -->
+                        <Border Style="{StaticResource CardStyle}" 
+                                Visibility="{Binding NcmFiles.Count, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0"
+                                               Text="待转换文件" 
+                                               FontSize="16" 
+                                               FontWeight="SemiBold"/>
+                                    <Button Grid.Column="1"
+                                            Style="{StaticResource IconButtonStyle}"
+                                            Content="✕"
+                                            ToolTip="清空列表"
+                                            Command="{Binding ClearFilesCommand}"/>
+                                </Grid>
+                                
+                                <Border BorderBrush="{StaticResource BorderColor}" 
+                                        BorderThickness="1" 
+                                        CornerRadius="8"
+                                        MaxHeight="200">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <ItemsControl ItemsSource="{Binding NcmFiles}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="#FFF9F9F9" 
+                                                            CornerRadius="6"
+                                                            Padding="12,8"
+                                                            Margin="8,4">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel Grid.Column="0">
+                                                                <TextBlock Text="{Binding FileName}" 
+                                                                           FontWeight="SemiBold"
+                                                                           TextTrimming="CharacterEllipsis"/>
+                                                                <TextBlock Text="{Binding FileSizeText}" 
+                                                                           FontSize="12"
+                                                                           Foreground="{StaticResource TextSecondaryColor}"/>
+                                                            </StackPanel>
+                                                            <TextBlock Grid.Column="1"
+                                                                       Text="{Binding StatusText}"
+                                                                       Foreground="{StaticResource PrimaryColor}"
+                                                                       Margin="12,0"
+                                                                       VerticalAlignment="Center"/>
+                                                            <Button Grid.Column="2"
+                                                                    Style="{StaticResource IconButtonStyle}"
+                                                                    Content="✕"
+                                                                    Command="{Binding DataContext.RemoveFileCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                    CommandParameter="{Binding}"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 转换控制卡片 -->
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ProgressBar Grid.Column="0"
+                                                 Style="{StaticResource ModernProgressBarStyle}"
+                                                 Value="{Binding ConversionProgress}"
+                                                 Maximum="100"
+                                                 Margin="0,0,12,0"/>
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding ConversionProgress, StringFormat='{}{0}%'}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource TextSecondaryColor}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ShowConversionComplete}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource SuccessColor}"/>
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+
+                                <TextBlock Text="{Binding ConversionStatusText}" 
+                                           FontSize="14"
+                                           Foreground="{StaticResource TextSecondaryColor}"
+                                           Margin="0,0,0,16"/>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Style="{StaticResource PrimaryButtonStyle}"
+                                            Content="开始转换"
+                                            Command="{Binding StartConversionCommand}"
+                                            Margin="0,0,12,0"/>
+                                    <Button Style="{StaticResource SecondaryButtonStyle}"
+                                            Content="取消"
+                                            Command="{Binding CancelConversionCommand}"/>
+                                </StackPanel>
+
+                                <Grid Visibility="{Binding ShowConversionComplete, Converter={StaticResource BoolToVisibilityConverter}}"
+                                      Margin="0,16,0,0">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="✓" 
+                                                   FontSize="24"
+                                                   Foreground="{StaticResource SuccessColor}"
+                                                   Margin="0,0,8,0"/>
+                                        <TextBlock Text="转换完成！" 
+                                                   FontSize="16"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource SuccessColor}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ID 下载 Tab -->
+            <TabItem Header="ID 下载">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,10,0,0">
+                        <!-- 歌曲 ID 输入卡片 -->
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="歌曲 ID" 
+                                           FontSize="16" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,12"/>
+                                <TextBlock Text="输入网易云音乐歌曲 ID（纯数字）" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextSecondaryColor}"
+                                           Margin="0,0,0,8"/>
+                                <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                                         Text="{Binding SongId, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 输出设置卡片 -->
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="输出设置" 
+                                           FontSize="16" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,12"/>
+                                
+                                <CheckBox Content="使用与 NCM 转换相同的输出路径"
+                                          IsChecked="{Binding UseSameOutputPath}"
+                                          Margin="0,0,0,12"/>
+                                
+                                <Grid IsEnabled="{Binding UseSameOutputPath, Converter={StaticResource InverseBoolConverter}}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0"
+                                             Style="{StaticResource ModernTextBoxStyle}"
+                                             Text="{Binding DownloadOutputPath, UpdateSourceTrigger=PropertyChanged}"
+                                             IsReadOnly="True"
+                                             Margin="0,0,12,0"/>
+                                    <Button Grid.Column="1"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            Content="浏览..."
+                                            Command="{Binding BrowseDownloadOutputCommand}"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 下载控制卡片 -->
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ProgressBar Grid.Column="0"
+                                                 Style="{StaticResource ModernProgressBarStyle}"
+                                                 Value="{Binding DownloadProgress}"
+                                                 Maximum="100"
+                                                 Margin="0,0,12,0"/>
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding DownloadProgress, StringFormat='{}{0}%'}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource TextSecondaryColor}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ShowDownloadComplete}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource SuccessColor}"/>
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+
+                                <TextBlock Text="{Binding DownloadStatusText}" 
+                                           FontSize="14"
+                                           Foreground="{StaticResource TextSecondaryColor}"
+                                           Margin="0,0,0,16"/>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Style="{StaticResource PrimaryButtonStyle}"
+                                            Content="开始下载"
+                                            Command="{Binding StartDownloadCommand}"
+                                            Margin="0,0,12,0"/>
+                                    <Button Style="{StaticResource SecondaryButtonStyle}"
+                                            Content="取消"
+                                            Command="{Binding CancelDownloadCommand}"/>
+                                </StackPanel>
+
+                                <Grid Visibility="{Binding ShowDownloadComplete, Converter={StaticResource BoolToVisibilityConverter}}"
+                                      Margin="0,16,0,0">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="✓" 
+                                                   FontSize="24"
+                                                   Foreground="{StaticResource SuccessColor}"
+                                                   Margin="0,0,8,0"/>
+                                        <TextBlock Text="下载完成！" 
+                                                   FontSize="16"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource SuccessColor}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 下载任务列表 -->
+                        <Border Style="{StaticResource CardStyle}"
+                                Visibility="{Binding DownloadTasks.Count, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel>
+                                <TextBlock Text="下载任务" 
+                                           FontSize="16" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,12"/>
+                                
+                                <Border BorderBrush="{StaticResource BorderColor}" 
+                                        BorderThickness="1" 
+                                        CornerRadius="8"
+                                        MaxHeight="200">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <ItemsControl ItemsSource="{Binding DownloadTasks}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="#FFF9F9F9" 
+                                                            CornerRadius="6"
+                                                            Padding="12,8"
+                                                            Margin="8,4">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel Grid.Column="0">
+                                                                <TextBlock Text="{Binding SongName}" 
+                                                                           FontWeight="SemiBold"/>
+                                                                <TextBlock Text="{Binding Artist}" 
+                                                                           FontSize="12"
+                                                                           Foreground="{StaticResource TextSecondaryColor}"/>
+                                                            </StackPanel>
+                                                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                                <ProgressBar Value="{Binding Progress}"
+                                                                            Maximum="100"
+                                                                            Width="80"
+                                                                            Height="6"
+                                                                            Margin="0,0,8,0"/>
+                                                                <TextBlock Text="{Binding StatusText}"
+                                                                           Foreground="{StaticResource PrimaryColor}"
+                                                                           VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
