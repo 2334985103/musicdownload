@@ -188,7 +188,7 @@
 
 1. 克隆仓库
 ```bash
-git clone https://github.com/yourusername/MusicBox.git
+git clone https://github.com/lhost01/musicdownload.git
 ```
 
 2. 使用 Visual Studio 2019+ 打开 `网易云音乐下载.sln`
