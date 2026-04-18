@@ -2,6 +2,8 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using TagLib;
 
 namespace 网易云音乐下载.Models
 {
@@ -103,6 +105,15 @@ namespace 网易云音乐下载.Models
         }
 
         /// <summary>
+        /// 专辑封面
+        /// </summary>
+        public byte[] AlbumCover
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// 时长
         /// </summary>
         public TimeSpan Duration
@@ -139,7 +150,7 @@ namespace 网易云音乐下载.Models
             {
                 if (!string.IsNullOrWhiteSpace(Title))
                 {
-                    return string.IsNullOrWhiteSpace(Artist) ? Title : $"{Title} - {Artist}";
+                    return string.IsNullOrWhiteSpace(Artist) ? Title : string.Format("{0} - {1}", Title, Artist);
                 }
                 return FileName;
             }
@@ -153,7 +164,7 @@ namespace 网易云音乐下载.Models
             get
             {
                 if (!string.IsNullOrWhiteSpace(Artist) && !string.IsNullOrWhiteSpace(Album))
-                    return $"{Artist} · {Album}";
+                    return string.Format("{0} · {1}", Artist, Album);
                 return Artist ?? Album ?? "";
             }
         }
@@ -166,10 +177,10 @@ namespace 网易云音乐下载.Models
             get
             {
                 if (FileSize < 1024)
-                    return $"{FileSize} B";
+                    return string.Format("{0} B", FileSize);
                 if (FileSize < 1024 * 1024)
-                    return $"{FileSize / 1024.0:F1} KB";
-                return $"{FileSize / (1024.0 * 1024.0):F1} MB";
+                    return string.Format("{0:F1} KB", FileSize / 1024.0);
+                return string.Format("{0:F1} MB", FileSize / (1024.0 * 1024.0));
             }
         }
 
@@ -235,28 +246,58 @@ namespace 网易云音乐下载.Models
                 FileSize = fileInfo.Length
             };
 
-            // 尝试读取音频文件元数据
+            // 使用 TagLib 读取音频文件元数据
             try
             {
-                var mediaPlayer = new MediaPlayer();
-                mediaPlayer.Open(new Uri(filePath));
-                
-                // 等待媒体打开完成（最多等待 500ms）
-                int waitCount = 0;
-                while (mediaPlayer.NaturalDuration.TimeSpan == TimeSpan.Zero && waitCount < 25)
+                using (var file = TagLib.File.Create(filePath))
                 {
-                    System.Threading.Thread.Sleep(20);
-                    waitCount++;
+                    // 读取基本元数据
+                    if (!string.IsNullOrWhiteSpace(file.Tag.Title))
+                        songInfo.Title = file.Tag.Title;
+                    
+                    if (file.Tag.Performers != null && file.Tag.Performers.Length > 0)
+                        songInfo.Artist = string.Join(", ", file.Tag.Performers);
+                    
+                    if (!string.IsNullOrWhiteSpace(file.Tag.Album))
+                        songInfo.Album = file.Tag.Album;
+                    
+                    // 读取时长
+                    if (file.Properties.Duration != TimeSpan.Zero)
+                        songInfo.Duration = file.Properties.Duration;
+                    
+                    // 读取专辑封面
+                    if (file.Tag.Pictures != null && file.Tag.Pictures.Length > 0)
+                    {
+                        var picture = file.Tag.Pictures[0];
+                        songInfo.AlbumCover = picture.Data.Data;
+                    }
                 }
-                
-                if (mediaPlayer.NaturalDuration.HasTimeSpan)
-                {
-                    songInfo.Duration = mediaPlayer.NaturalDuration.TimeSpan;
-                }
-                
-                mediaPlayer.Close();
             }
-            catch { }
+            catch 
+            {
+                // 如果 TagLib 读取失败，尝试使用 MediaPlayer 读取时长
+                try
+                {
+                    var mediaPlayer = new MediaPlayer();
+                    mediaPlayer.Open(new Uri(filePath));
+                    
+                    // 等待媒体打开完成（最多等待 500ms）
+                    int waitCount = 0;
+                    while (mediaPlayer.NaturalDuration.TimeSpan == TimeSpan.Zero && waitCount < 25)
+                    {
+                        System.Threading.Thread.Sleep(20);
+                        waitCount++;
+                    }
+                    
+                    if (mediaPlayer.NaturalDuration.HasTimeSpan)
+                    {
+                        songInfo.Duration = mediaPlayer.NaturalDuration.TimeSpan;
+                    }
+                    
+                    mediaPlayer.Close();
+                }
+                catch { }
+            }
 
             return songInfo;
         }

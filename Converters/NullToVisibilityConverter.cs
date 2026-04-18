@@ -1,22 +1,18 @@
 using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
-using MahApps.Metro.IconPacks;
 
 namespace 网易云音乐下载
 {
     /// <summary>
-    /// 布尔值到播放/暂停图标的转换器
+    /// null 值到可见性转换器
     /// </summary>
-    public class BoolToPlayPauseConverter : IValueConverter
+    public class NullToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool isPlaying && isPlaying)
-            {
-                return PackIconMaterialKind.Pause; // 暂停图标
-            }
-            return PackIconMaterialKind.Play; // 播放图标
+            return value != null ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

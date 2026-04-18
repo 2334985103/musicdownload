@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -147,7 +147,7 @@ namespace 网易云音乐下载.Models
         /// </summary>
         public string SongCountText
         {
-            get { return $"{SongCount} 首歌曲"; }
+            get { return string.Format("{0} 首歌曲", SongCount); }
         }
 
         /// <summary>
